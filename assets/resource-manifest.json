@@ -1,0 +1,17 @@
+[
+  {
+    "file": "harmony-report.ttf",
+    "source": "用户提供的 HarmonyOS Sans SC Regular 原始完整字体（未修改）；许可见包内 licenses/HarmonyOS-Sans-LICENSE.txt",
+    "bytes": 8261128
+  },
+  {
+    "file": "jetbrains-report.ttf",
+    "source": "原报告示范页字体内嵌资源",
+    "bytes": 53356
+  },
+  {
+    "file": "course-logo.svg",
+    "source": "原报告示范页校徽；仅确认适用机构后使用",
+    "bytes": 30463
+  }
+]

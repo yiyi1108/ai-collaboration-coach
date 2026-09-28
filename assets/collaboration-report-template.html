@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{PROJECT_NAME}}｜AI协作报告</title>
+  <style>
+    @font-face { font-family: "Harmony Report"; src: url("__HARMONY_FONT__") format("truetype"); font-display: swap; }
+    @font-face { font-family: "JetBrains Report"; src: url("__JETBRAINS_FONT__") format("truetype"); font-display: swap; unicode-range: U+0000-024F; }
+    :root {
+      --paper: #f1f1ee;
+      --white: #ffffff;
+      --ink: #101010;
+      --muted: #6d6d68;
+      --line: #c9c9c3;
+      --soft: #deded8;
+      --accent: #e9402c;
+      --page: 1180px;
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "JetBrains Report", "Harmony Report", "HarmonyOS Sans SC", "PingFang SC", sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      text-rendering: optimizeLegibility;
+    }
+    .mono, .eyebrow, .index, .status, .metric, .en {
+      font-family: "JetBrains Report", "JetBrains Mono", monospace;
+    }
+    .topbar {
+      background: var(--ink);
+      color: var(--white);
+      border-bottom: 8px solid var(--accent);
+    }
+    .topbar-inner {
+      width: min(calc(100% - 48px), var(--page));
+      margin: 0 auto;
+      min-height: 98px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 28px;
+    }
+    .brand img { width: 184px; height: auto; display: block; }
+    .course {
+      padding-left: 28px;
+      border-left: 1px solid #5d5d5d;
+      font-size: 18px;
+      letter-spacing: .08em;
+      white-space: nowrap;
+    }
+    .course .roman { color: var(--accent); font-family: "JetBrains Report", monospace; }
+    .top-id { color: #a7a7a2; font-size: 12px; letter-spacing: .12em; }
+    main { width: min(calc(100% - 48px), var(--page)); margin: 0 auto; }
+    .hero {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      padding: 72px 0 58px;
+      border-bottom: 1px solid var(--ink);
+      position: relative;
+    }
+    .hero-kicker { grid-column: 1 / 5; align-self: start; }
+    .hero-title { grid-column: 4 / 13; margin: 0; }
+    .eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+    .hero-title h1 {
+      margin: 0;
+      max-width: 900px;
+      font-size: clamp(52px, 8.2vw, 112px);
+      line-height: .89;
+      letter-spacing: -.065em;
+      font-weight: 500;
+    }
+    .hero-title h1 span { color: var(--accent); }
+    .hero-sub {
+      grid-column: 7 / 13;
+      margin: 34px 0 0;
+      max-width: 600px;
+      font-size: clamp(18px, 2vw, 26px);
+      line-height: 1.45;
+    }
+    .section {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 24px;
+      padding: 64px 0;
+      border-bottom: 1px solid var(--ink);
+    }
+    .section-head { grid-column: 1 / 4; }
+    .section-head h2 {
+      margin: 10px 0 0;
+      font-size: clamp(28px, 3.4vw, 48px);
+      line-height: 1.08;
+      font-weight: 500;
+      letter-spacing: -.035em;
+    }
+    .section-body { grid-column: 4 / 13; }
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--ink);
+      border-left: 1px solid var(--ink);
+    }
+    .fact {
+      min-height: 132px;
+      padding: 18px 20px 22px;
+      border-right: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+    }
+    .fact.wide { grid-column: span 2; }
+    .fact.full { grid-column: 1 / -1; }
+    .fact-label { display: block; margin-bottom: 22px; color: var(--muted); font-size: 12px; }
+    .fact-value { font-size: 21px; line-height: 1.35; }
+    .status { display: inline-flex; align-items: center; gap: 9px; font-size: 14px; }
+    .status::before { content: ""; width: 9px; height: 9px; background: var(--accent); border-radius: 50%; }
+    .preview-wrap { grid-column: 1 / 13; margin: 46px 0 0; }
+    .preview-wrap:empty { display: none; margin: 0; }
+    .preview-head {
+      min-height: 210px;
+      padding: 34px 40px 38px;
+      background: var(--ink);
+      color: var(--white);
+      display: grid;
+      grid-template-columns: 2fr 7fr 3fr;
+      gap: 30px;
+      align-items: end;
+    }
+    .preview-head .big-number { color: var(--accent); font: 400 clamp(72px, 9vw, 132px)/.8 "JetBrains Report", monospace; letter-spacing: -.08em; }
+    .preview-head h3 { margin: 0 0 12px; font-size: clamp(28px, 3.4vw, 46px); font-weight: 500; line-height: 1.05; }
+    .preview-head p { color: #c6c6c0; margin: 0; max-width: 42ch; }
+    .preview-hint { align-self: start; justify-self: end; color: var(--accent); font-size: 12px; letter-spacing: .1em; }
+    .preview-scroller {
+      display: flex;
+      gap: 18px;
+      padding: 18px 0 24px;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scroll-snap-type: inline mandatory;
+      scrollbar-color: var(--accent) var(--soft);
+      scrollbar-width: thin;
+    }
+    .preview-card {
+      flex: 0 0 min(46vw, 500px);
+      margin: 0;
+      background: var(--white);
+      border-top: 6px solid var(--ink);
+      scroll-snap-align: start;
+      transition: transform .22s ease, border-color .22s ease;
+    }
+    .preview-card:hover { transform: translateY(-6px); border-color: var(--accent); }
+    .preview-card-media { height: 620px; display: grid; place-items: center; overflow: hidden; background: #e9e9e4; }
+    .preview-card img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .preview-card figcaption { padding: 13px 16px 16px; display: flex; justify-content: space-between; gap: 16px; font-size: 12px; }
+    .preview-card figcaption span:last-child { color: var(--muted); font-family: "JetBrains Report", monospace; }
+    .caption { margin-top: 12px; color: var(--muted); font-size: 12px; }
+    .highlights {
+      grid-column: 1 / 13;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .highlight {
+      min-height: 250px;
+      padding: 38px 42px 42px;
+      display: grid;
+      grid-template-columns: 4fr 8fr;
+      gap: 40px;
+      align-items: start;
+    }
+    .highlight:nth-child(1) { background: var(--accent); color: var(--white); }
+    .highlight:nth-child(2) { background: var(--ink); color: var(--white); }
+    .highlight:nth-child(3) { background: var(--soft); color: var(--ink); }
+    .highlight h3 { margin: 0; font-size: clamp(24px, 3vw, 39px); line-height: 1.05; font-weight: 500; letter-spacing: -.035em; }
+    .highlight-lead { margin: 0; font-size: clamp(21px, 2.35vw, 31px); line-height: 1.3; letter-spacing: -.022em; }
+    .highlight ul { margin: 24px 0 0; padding: 0; list-style: none; }
+    .highlight li { position: relative; padding: 10px 0 10px 24px; border-top: 1px solid currentColor; font-size: 16px; line-height: 1.55; }
+    .highlight li::before { content: "↳"; position: absolute; left: 0; font-family: "JetBrains Report", monospace; }
+    .highlight:nth-child(1) li { border-color: rgba(255,255,255,.42); }
+    .highlight:nth-child(2) li { border-color: rgba(255,255,255,.28); color: #d2d2cc; }
+    .highlight:nth-child(3) li { border-color: #aaa9a3; }
+    .method-assets { margin-top: 24px; }
+    .method-asset { padding-top: 16px; margin-top: 16px; border-top: 1px solid rgba(255,255,255,.28); min-width: 0; }
+    .method-asset h4 { margin: 0 0 10px; font-size: 17px; font-weight: 500; }
+    .method-asset p { margin: 8px 0 0; font-size: 15px; overflow-wrap: anywhere; }
+    .method-asset pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; font-family: "JetBrains Report", "Harmony Report", "PingFang SC", sans-serif; font-size: 15px; line-height: 1.65; }
+    .process-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--ink); border-left: 1px solid var(--ink); }
+    .process-item { padding: 24px; min-height: 245px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+    .process-item h3 { margin: 18px 0 14px; font-size: 23px; font-weight: 500; }
+    .process-item p { margin: 0; color: #373734; }
+    .index { display: inline-block; color: var(--accent); font-size: 13px; }
+    .result-grid { display: grid; grid-template-columns: 5fr 4fr; border-top: 1px solid var(--ink); border-left: 1px solid var(--ink); }
+    .result-block { padding: 25px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+    .result-block.full { grid-column: 1 / -1; }
+    .result-block h3 { margin: 0 0 16px; font-size: 23px; font-weight: 500; }
+    .result-block ul { margin: 0; padding: 0; list-style: none; }
+    .result-block li { padding: 10px 0 10px 20px; border-top: 1px solid var(--line); position: relative; }
+    .result-block li::before { content: "↳"; position: absolute; left: 0; color: var(--accent); font-family: "JetBrains Report", monospace; }
+    footer { width: min(calc(100% - 48px), var(--page)); margin: 0 auto; padding: 24px 0 54px; display: flex; justify-content: space-between; gap: 24px; color: var(--muted); font-size: 11px; }
+    footer p { margin: 0; max-width: 900px; }
+    @media (max-width: 820px) {
+      .topbar-inner { min-height: 84px; align-items: flex-start; padding: 20px 0; }
+      .brand { gap: 16px; align-items: flex-start; }
+      .brand img { width: 128px; }
+      .course { padding-left: 16px; font-size: 14px; white-space: normal; }
+      .top-id { display: none; }
+      .hero { padding: 48px 0 40px; }
+      .hero-kicker, .hero-title, .hero-sub { grid-column: 1 / 13; }
+      .hero-title { margin-top: 44px; }
+      .hero-sub { margin-top: 26px; }
+      .section { padding: 48px 0; }
+      .section-head, .section-body { grid-column: 1 / 13; }
+      .section-body { margin-top: 34px; }
+      .overview-grid { grid-template-columns: 1fr 1fr; }
+      .fact.wide { grid-column: span 2; }
+      .preview-head { grid-template-columns: 1fr; align-items: start; }
+      .preview-hint { justify-self: start; }
+      .preview-card { flex-basis: 78vw; }
+      .preview-card-media { height: 560px; }
+      .highlight { grid-template-columns: 1fr; gap: 30px; min-height: 0; padding: 32px 28px 36px; }
+      .process-grid, .result-grid { grid-template-columns: 1fr; }
+      .result-block.full { grid-column: auto; }
+      footer { flex-direction: column; }
+    }
+    @media (max-width: 520px) {
+      main, .topbar-inner, footer { width: min(calc(100% - 28px), var(--page)); }
+      .hero-title h1 { font-size: 49px; }
+      .overview-grid { grid-template-columns: 1fr; }
+      .fact, .fact.wide, .fact.full { grid-column: span 1; }
+      .preview-head { padding: 28px 24px 32px; }
+      .preview-card { flex-basis: 86vw; }
+      .preview-card-media { height: 500px; }
+      .process-item { min-height: 0; }
+    }
+    @media print {
+      body { background: #fff; }
+      .topbar { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .section, .preview-head, .preview-card, .highlight, .process-item, .result-block { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="{{LOGO_SOURCE}}" alt="{{ORGANIZATION_NAME}}">
+        <div class="course">人工智能素养 <span class="roman">I</span></div>
+      </div>
+      <div class="top-id mono">AI COLLABORATION REPORT / {{REPORT_ID}}</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-kicker"><div class="eyebrow">Collaboration Report · {{STATUS_EN}}</div></div>
+      <div class="hero-title"><h1>{{DISPLAY_TITLE_LINE_1}}<br>{{DISPLAY_TITLE_LINE_2}}<br><span>{{DISPLAY_TITLE_ACCENT}}</span></h1></div>
+      <p class="hero-sub">{{ONE_LINE_COLLABORATION_SUMMARY}}</p>
+    </section>
+
+    <section class="section" id="overview">
+      <div class="section-head"><div class="eyebrow">01 / Overview</div><h2>项目概览</h2></div>
+      <div class="section-body">
+        <div class="overview-grid">
+          <div class="fact wide"><span class="fact-label mono">PROJECT</span><div class="fact-value">{{PROJECT_NAME}}</div></div>
+          <div class="fact"><span class="fact-label mono">STATUS</span><div class="status">{{CURRENT_STATUS}}</div></div>
+          <div class="fact"><span class="fact-label mono">FORMAT</span><div class="fact-value">{{WORK_FORMAT}}</div></div>
+          <div class="fact wide"><span class="fact-label mono">ANCHOR</span><div class="fact-value">{{NEED_ANCHOR_OR_SUCCESS_CRITERIA}}</div></div>
+          <div class="fact full"><span class="fact-label mono">Group Member：</span><div class="fact-value">{{GROUP_MEMBER}}</div></div>
+        </div>
+      </div>
+
+      <!-- OPTIONAL_PREVIEW：使用1—6张学生提供或确认的最终／代表性成果；删除未使用的卡片。无可靠图片时删除整个 preview-wrap，或给它添加 hidden 属性；不得只清空内部内容后保留标题与间距。 -->
+      <div class="preview-wrap" data-optional="artwork-gallery">
+        <div class="preview-head">
+          <div class="big-number">{{PREVIEW_COUNT}}</div>
+          <div><h3>成果系列</h3><p>{{PREVIEW_GROUP_CAPTION}}</p></div>
+          <div class="preview-hint mono">DRAG / SWIPE →</div>
+        </div>
+        <div class="preview-scroller" aria-label="成果画廊">
+          <!-- 将本卡片复制到所需数量，最多6张；悬停只是增强效果，滑动必须始终可用。 -->
+          <figure class="preview-card">
+            <div class="preview-card-media"><img src="{{PREVIEW_IMAGE_SOURCE_1}}" alt="{{PREVIEW_ALT_1}}"></div>
+            <figcaption><span>{{PREVIEW_CAPTION_1}}</span><span>01 / {{PREVIEW_COUNT}}</span></figcaption>
+          </figure>
+          <figure class="preview-card">
+            <div class="preview-card-media"><img src="{{PREVIEW_IMAGE_SOURCE_2}}" alt="{{PREVIEW_ALT_2}}"></div>
+            <figcaption><span>{{PREVIEW_CAPTION_2}}</span><span>02 / {{PREVIEW_COUNT}}</span></figcaption>
+          </figure>
+          <figure class="preview-card">
+            <div class="preview-card-media"><img src="{{PREVIEW_IMAGE_SOURCE_3}}" alt="{{PREVIEW_ALT_3}}"></div>
+            <figcaption><span>{{PREVIEW_CAPTION_3}}</span><span>03 / {{PREVIEW_COUNT}}</span></figcaption>
+          </figure>
+        </div>
+        <div class="caption mono">{{IMAGE_EVIDENCE_NOTE}}</div>
+      </div>
+    </section>
+
+    <section class="section" id="highlights">
+      <div class="section-head"><div class="eyebrow">02 / Highlights</div><h2>核心亮点</h2></div>
+      <div class="section-body"></div>
+      <!-- 三项均为候选。无证据、价值低或内容重复时删除／合并，不强行填满。 -->
+      <div class="highlights">
+        <article class="highlight"><h3>关键发现</h3><div><p class="highlight-lead">{{KEY_FINDING_LEAD}}</p><ul><li>{{KEY_FINDING_EVIDENCE_1}}</li><li>{{KEY_FINDING_EVIDENCE_2}}</li></ul></div></article>
+        <article class="highlight"><h3>可复用经验</h3><div><p class="highlight-lead">{{REUSABLE_LESSON_LEAD}}</p><ul><li>{{REUSABLE_LESSON_1}}</li><li>{{REUSABLE_LESSON_2}}</li><li>{{OPTIONAL_TRANSFER_SCOPE}}</li></ul>
+          <!-- 方法资产均为可选；删除无依据类别与槽位，不把待测试建议称为成功经验。 -->
+          <div class="method-assets">
+            <div class="method-asset" data-optional="reusable-prompt"><h4>可复用提示词 / 提问方式</h4><pre>{{METHOD_PROMPT_TEXT}}</pre><p>{{METHOD_PROMPT_CONTEXT_AND_EVIDENCE}}</p></div>
+            <div class="method-asset" data-optional="tool-route"><h4>工具路线</h4><p>{{METHOD_TOOL_ROUTE}}</p><p>{{METHOD_TOOL_CONDITIONS}}</p></div>
+            <div class="method-asset" data-optional="pitfall"><h4>避坑与检查</h4><p>{{METHOD_PITFALL_ACTION}}</p><p>{{METHOD_PITFALL_SCOPE}}</p></div>
+          </div></div></article>
+        <article class="highlight"><h3>下一关任务</h3><div><p class="highlight-lead">{{NEXT_CHALLENGE_LEAD}}</p><ul><li>{{NEXT_CHALLENGE_ACTION_1}}</li><li>{{NEXT_CHALLENGE_ACTION_2}}</li></ul></div></article>
+      </div>
+    </section>
+
+    <section class="section" id="process">
+      <div class="section-head"><div class="eyebrow">03 / Review</div><h2>过程回顾<br>与评估</h2></div>
+      <div class="section-body">
+        <!-- 只保留真正影响方向或结果的条目。 -->
+        <div class="process-grid">
+          <article class="process-item"><span class="index">01</span><h3>初始想法与需求锚定</h3><p>{{NEED_EVOLUTION}}</p></article>
+          <article class="process-item"><span class="index">02</span><h3>关键转折</h3><p>{{TURNING_POINT}}</p></article>
+          <article class="process-item"><span class="index">03</span><h3>学生判断</h3><p>{{STUDENT_DECISION}}</p></article>
+          <article class="process-item"><span class="index">04</span><h3>AI作用与边界</h3><p>{{AI_CONTRIBUTION_AND_LIMIT}}</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="results">
+      <div class="section-head"><div class="eyebrow">04 / Results</div><h2>成果与验证</h2></div>
+      <div class="section-body">
+        <div class="result-grid">
+          <article class="result-block"><h3>当前成果</h3><ul><li>{{CURRENT_OUTPUT_1}}</li><li>{{CURRENT_OUTPUT_2}}</li></ul></article>
+          <article class="result-block"><h3>验证结果</h3><ul><li>{{VERIFIED_RESULT_1}}</li><li>{{VERIFIED_RESULT_2}}</li></ul></article>
+          <article class="result-block full"><h3>待解决问题</h3><ul><li>{{UNRESOLVED_ISSUE_1}}</li><li>{{UNRESOLVED_ISSUE_2}}</li></ul></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>本报告依据当前对话、学生提供的作品及外部执行信息生成；未提供或无法确认的过程不作推测。</p>
+    <span class="mono">AI LITERACY I · {{ORGANIZATION_SHORT_NAME}}</span>
+  </footer>
+</body>
+</html>
