@@ -1,0 +1,47 @@
+name: Import and publish Coach v0.2.0
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: initial-coach-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'yiyi1108/ai-collaboration-coach' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify and expand prepared source archive
+        run: |
+          python3 - <<'PYCODE'
+          import hashlib, pathlib, zipfile
+          p = pathlib.Path('coach-source-import.zip')
+          assert hashlib.sha256(p.read_bytes()).hexdigest() == 'c63d4812f911fafab1902c33d2473b625e6c050554600501e54aeeb0cab0754f', 'Source archive mismatch'
+          allowed_files = {'.gitignore','README.md','LICENSE','THIRD_PARTY_NOTICES.md','CHANGELOG.md','使用说明_中文版.md'}
+          allowed_dirs = {'ai-collaboration-coach','docs','licenses','tools'}
+          with zipfile.ZipFile(p) as z:
+              for item in z.infolist():
+                  name = pathlib.PurePosixPath(item.filename)
+                  assert not name.is_absolute() and '..' not in name.parts
+                  assert name.parts[0] in allowed_dirs or str(name) in allowed_files
+                  assert ((item.external_attr >> 16) & 0o170000) != 0o120000
+              assert z.testzip() is None
+              z.extractall('.')
+          PYCODE
+      - name: Validate and build install package
+        run: python3 tools/build_release.py
+      - name: Commit complete source tree
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add ai-collaboration-coach docs licenses tools README.md LICENSE THIRD_PARTY_NOTICES.md CHANGELOG.md 使用说明_中文版.md .gitignore
+          git rm coach-source-import.zip
+          git commit -m "release: import complete Coach v0.2.0 Chinese source"
+          git push origin HEAD:main
+      - name: Publish fixed version and latest download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.2.0 dist/ai-collaboration-coach.zip dist/SHA256SUMS.txt --target "$(git rev-parse HEAD)" --title "Coach Skill v0.2.0 中文版" --notes "面向 AI 素养实践课的中文 Coach Skill。下载 ai-collaboration-coach.zip 并保留完整目录；包含主指令、详细方法卡、MD 与 HTML 报告模板、字体及检查脚本。原创内容采用 MIT，第三方资源见许可说明。已完成设计者自测，尚未进行学生课堂公测。" --latest
