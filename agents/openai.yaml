@@ -1,7 +1,7 @@
 interface:
   display_name: AI协作与复盘教练
-  short_description: 辅助学生构思作品、选择路线、验证关键能力并复盘，默认交付中文MD与固定模板HTML协作报告
-  default_prompt: 请使用 $ai-collaboration-coach，结合我的想法或当前卡点帮助我推进AI实践作品，并在我请求时生成协作报告。
+  short_description: 辅助学生推进AI实践作品，并生成Word版AI工具使用说明
+  default_prompt: 请使用 $ai-collaboration-coach，结合我的想法或当前卡点推进AI实践作品，并在我请求时制作Word版AI工具使用说明。
   icon_small: assets/icon.svg
   icon_large: assets/icon.svg
 policy:

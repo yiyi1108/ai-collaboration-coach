@@ -1,7 +1,7 @@
 [
   {
     "file": "harmony-report.ttf",
-    "source": "用户提供的 HarmonyOS Sans SC Regular 原始完整字体（未修改）；许可见包内 licenses/HarmonyOS-Sans-LICENSE.txt",
+    "source": "沿用公开仓库的完整未修改HarmonyOS Sans SC Regular字体；许可见THIRD_PARTY_NOTICES.md与licenses/HarmonyOS-Sans-LICENSE.txt",
     "bytes": 8261128
   },
   {
@@ -13,5 +13,15 @@
     "file": "course-logo.svg",
     "source": "原报告示范页校徽；仅确认适用机构后使用",
     "bytes": 30463
+  },
+  {
+    "file": "work-creation-plan-template.docx",
+    "source": "用户提供的作品创作方案Word模板；保留六部分结构与排版，仅统一优先最小验证栏目名称",
+    "bytes": 17583
+  },
+  {
+    "file": "ai-tool-use-guide-template.docx",
+    "source": "小组共同作品的AI工具使用说明Word模板",
+    "bytes": 37575
   }
 ]
